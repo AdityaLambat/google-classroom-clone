@@ -1,0 +1,63 @@
+{% include 'header.html' %}
+
+<title>Classroom | Create Class </title>
+
+<!-- Create Class Modal -->
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3">Join Class</h1>
+    <hr>
+    <div class="row">
+      <div class="col-12 col-md-5">
+        <div>
+          <p><b>You're currently signed in as</b></p>
+          <div style="display: flex; align-items: center;">
+            <img style="border-radius: 50%; width: 15%;" src="{{ user['profile'] }}">
+            <div style="margin-left: 5%;">
+              <p style="color: black;"><b>{{ user['fname'] | capitalize }} {{ user['lname'] | capitalize }}</b></p>
+              <p style="line-height: 0%;">{{ user['email'] }}</p>
+            </div>
+          </div>
+        </div>
+        <hr class="col-12 col-md-18">
+        <div>
+          <p>Ask your teacher for the class code, then enter it here</p>
+        </div>
+        <div class="card">
+          {% if msg == 'error' %}
+          <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">
+            Incorrect Class Code
+          </div>
+          {% elif msg == 'exist' %}
+          <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">
+            You have already enrolled this class
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <form action="/joinclass" method="POST">
+              <div class="mb-3">
+                <input class="form-control form-control-lg" type="text" name="code" placeholder="Class Code"
+                  required minlength="6" maxlength="6" />
+              </div>
+              <div>
+                <p><b>To sign in with a class code</b></p>
+                <ul>
+                  <li>Use an authorised account</li>
+                  <li>Use a class code with 6 digit letters or numbers and no space or symbols</li>
+                </ul>
+              </div>
+              <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-lg btn-primary">Join</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}

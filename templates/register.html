@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords"
+		content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="{{ url_for('static', filename='assets/img/icons/icon.jpg') }}" rel="shortcut icon">
+
+	<!-- Icon Font Stylesheet -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+	<title>Classroom | Sign Up</title>
+
+	<link href="{{ url_for('static', filename='assets/css/app.css') }}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<style>
+		@keyframes customFadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		@keyframes customFadeOut {
+			from {
+				opacity: 1;
+			}
+
+			to {
+				opacity: 0;
+			}
+		}
+
+		.custom-fade {
+			animation: customFadeIn 1s ease-in-out, customFadeOut 1s ease-in-out 2s;
+		}
+
+		#eye2 {
+			display: none;
+		}
+
+		#pass-field {
+			display: flex;
+			flex-direction: row;
+		}
+
+		#pass-field i {
+			font-size: 1.3rem;
+			margin-top: 5px;
+			margin-left: -40px;
+			cursor: pointer;
+		}
+
+		/*** Login and Register ***/
+
+		#login,
+		#register {
+			color: white;
+			background-color: #2B9BFF;
+			font-size: 1rem;
+			font-weight: bold;
+			border-radius: 5px;
+			margin-left: 5px;
+			margin-right: 5px;
+		}
+
+		#login:hover,
+		#register:hover {
+			color: white;
+			background-color: var(--dark);
+		}
+
+		#form-style {
+			/* display: none; */
+			margin: auto;
+			margin-top: 5%;
+			background-color: white;
+			padding: 20px 30px 40px 30px;
+			border-radius: 5px;
+			border: 1px solid black;
+		}
+
+		#form-style input {
+			border: 1px solid black;
+		}
+
+		#fnerr,
+		#lnerr,
+		#emailerr,
+		#match {
+			margin-top: 3px;
+			margin-bottom: -15px !important;
+			font-size: 0.9rem;
+			display: none;
+		}
+
+		/* Styling For Password validation in Registration */
+		/* The message box is shown when the user clicks on the password field */
+		#message {
+			margin-top: 20px;
+			display: none;
+			color: #000;
+			position: relative;
+		}
+
+		#message p {
+			font-size: 15px;
+			margin-top: -20px;
+		}
+
+		#valid1,
+		#valid2,
+		#valid3,
+		#valid4,
+		#valid5 {
+			display: none;
+			padding-left: 10px;
+			color: green;
+		}
+
+
+		#invalid1,
+		#invalid2,
+		#invalid3,
+		#invalid4,
+		#invalid5 {
+			padding-left: 10px;
+			color: red;
+		}
+	</style>
+	<main class="d-flex w-100">
+		<div class="container d-flex flex-column">
+			<div class="row vh-100">
+				<div class="col-sm-10 col-md-8 col-lg-6 col-xl-5 mx-auto d-table h-100">
+					<div class="d-table-cell align-middle">
+
+						<div class="text-center mt-4">
+							<h1 style="font-family: 'Rock Salt', cursive;">Classroom</h1>
+							<h1 class="h2">Get started</h1>
+							<p class="lead">
+								Start creating the best possible user experience for you students.
+							</p>
+							{% if msg == 'exist' %}
+							<div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">Account already exist
+							</div>
+							{% elif msg == 'success' %}
+							<div id="myalert" class="alert alert-success col-md-12 custom-fade" role="alert">Registered Successfully
+							</div>
+							{% endif %}
+						</div>
+
+						<div class="card">
+							<div class="card-body">
+								<div class="m-sm-3">
+									<form action="/register" method="POST">
+										<div class="col-12" style="display: flex; justify-content: space-between;">
+											<div class="col-5">
+												<label class="form-label">First name</label>
+												<input class="form-control form-control-lg" type="text" name="fname" id="fntxt"
+													onkeyup="validateFName()" placeholder="Enter your name" required />
+												<p class="text-danger" id="fnerr">Please Enter Text Only</p>
+											</div>
+											<div class="col-5">
+												<label class="form-label">Last name</label>
+												<input class="form-control form-control-lg" type="text" name="lname" id="lntxt"
+													onkeyup="validateLName()" placeholder="Enter your name" required />
+												<p class="text-danger" id="lnerr">Please Enter Text Only</p>
+											</div>
+										</div>
+										<br>
+										<div class="mb-3">
+											<label class="form-label">Email</label>
+											<input class="form-control form-control-lg" type="email" name="email"
+												placeholder="Enter your email" required />
+										</div>
+										<label class="form-label">Password</label>
+										<div id="pass-field" class="mb-3">
+											<input id="signin-password" class="form-control form-control-lg" type="password" name="password"
+												placeholder="Enter your password" required />
+											<i class="bi bi-eye-slash-fill" style="color: #495057;" id="eye1" onclick="toggle()"></i>
+											<i class="bi bi-eye-fill" style="color: #495057;" id="eye2" onclick="toggle()"></i>
+										</div>
+										<p style="text-align: right;" class="text-danger" id="match">Password Does Not Matched</p>
+										<div class="col-lg-12" id="message">
+											<div class="col-md-12">
+												<p class="heading mb-3" style="color: black;"><b>Password must contain the following:</b></p>
+												<p id="lwc">Lowercase letter<i class="bi bi-x-circle-fill" id="invalid1"></i><i
+														class="bi bi-check-circle-fill" id="valid1"></i></p>
+												<p id="upc">Uppercase letter<i class="bi bi-x-circle-fill" id="invalid2"></i><i
+														class="bi bi-check-circle-fill" id="valid2"></i></p>
+												<p id="number">Number<i class="bi bi-x-circle-fill" id="invalid3"></i><i
+														class="bi bi-check-circle-fill" id="valid3"></i></p>
+												<p id="spch">Special character<i class="bi bi-x-circle-fill" id="invalid4"></i><i
+														class="bi bi-check-circle-fill" id="valid4"></i></p>
+												<p id="length">Minimum 8 & Maximum 15 characters<i class="bi bi-x-circle-fill"
+														id="invalid5"></i><i class="bi bi-check-circle-fill" id="valid5"></i></p>
+											</div>
+										</div>
+										<div class="col-6">
+											<button class="btn btn-success" type="reset">Reset</button>
+										</div>
+										<br>
+										<div style="display: flex; justify-content: space-between;">
+											<div>
+												<button type="submit" name="role" value="teacher" class="btn btn-lg btn-primary">I am
+													Teacher</button>
+											</div>
+											<div>
+												<button type="submit" name="role" value="student" class="btn btn-lg btn-primary">I am
+													Student</button>
+											</div>
+										</div>
+
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="text-center mb-3">
+							Already have account? <a href="/">Log In</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="{{url_for('static', filename='assets/js/app.js')}}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			setTimeout(function () {
+				document.getElementById('myalert').classList.add('d-none');
+			}, 2000); // 2000 milliseconds = 2 seconds
+		});
+	</script>
+
+	<script type="text/javascript">
+
+		// Toggle password
+		var change = false;
+		function toggle() {
+			if (change) {
+				document.getElementById("signin-password").setAttribute("type", "password");
+				document.getElementById("eye2").style.display = "none"
+				document.getElementById("eye1").style.display = "inline-block";
+				change = false;
+			} else {
+				document.getElementById("signin-password").setAttribute("type", "text");
+				document.getElementById("eye1").style.display = "none";
+				document.getElementById("eye2").style.display = "inline-block"
+				change = true;
+			}
+		}
+
+		// Text Validation
+
+		function validateFName() {
+			var letters = /^[A-Za-z]+$/
+			if (document.getElementById("fntxt").value.match(letters)) {
+				document.getElementById("fnerr").style.display = "none"
+				return true;
+			}
+			else {
+				document.getElementById("fnerr").style.display = "inline-block"
+				document.getElementById("fntxt").focus()
+				return false;
+			}
+		}
+
+		function validateLName() {
+			var letters = /^[A-Za-z]+$/
+			if (document.getElementById("lntxt").value.match(letters)) {
+				document.getElementById("lnerr").style.display = "none"
+				return true;
+			}
+			else {
+				document.getElementById("lnerr").style.display = "inline-block"
+				document.getElementById("lntxt").focus()
+				return false;
+			}
+		}
+
+		// Password Validation
+
+		var myInput = document.getElementById("signin-password");
+		// When the user clicks on the password field, show the message box
+		myInput.onfocus = function () {
+			document.getElementById("message").style.display = "inline-block";
+		}
+
+		// When the user clicks outside of the password field, hide the message box
+		myInput.onblur = function () {
+			document.getElementById("message").style.display = "none";
+		}
+
+		// When the user starts to type something inside the password field
+		myInput.onkeyup = function () {
+
+			var specialCharRegex = /[!@#$%^&*()\-_=+{};:,<.>]/;
+			// Validate lowercase letters
+			var lwcRegex = /[a-z]/g;
+			if (myInput.value.match(lwcRegex)) {
+				document.getElementById("valid1").style.display = "inline";
+				document.getElementById("invalid1").style.display = "none";
+			} else {
+				document.getElementById("valid1").style.display = "none";
+				document.getElementById("invalid1").style.display = "inline";
+				c1 = false;
+			}
+
+			// Validate uppercase letters
+			var upcRegex = /[A-Z]/g;
+			if (myInput.value.match(upcRegex)) {
+				document.getElementById("valid2").style.display = "inline";
+				document.getElementById("invalid2").style.display = "none";
+			} else {
+				document.getElementById("valid2").style.display = "none";
+				document.getElementById("invalid2").style.display = "inline";
+				c2 = false;
+			}
+
+			// Validate numbers
+			var digitRegex = /[0-9]/g;
+			if (myInput.value.match(digitRegex)) {
+				document.getElementById("valid3").style.display = "inline";
+				document.getElementById("invalid3").style.display = "none";
+			} else {
+				document.getElementById("valid3").style.display = "none";
+				document.getElementById("invalid3").style.display = "inline";
+				c3 = false;
+			}
+
+			// Validate Special Characters
+			var spChRegex = /[!@#$%^&*()\-_=+{};:,<.>]/g;
+			if (myInput.value.match(spChRegex)) {
+				document.getElementById("valid4").style.display = "inline";
+				document.getElementById("invalid4").style.display = "none";
+			} else {
+				document.getElementById("valid4").style.display = "none";
+				document.getElementById("invalid4").style.display = "inline";
+				c4 = false;
+			}
+
+			// Validate Password Length
+			if (myInput.value.length >= 8 && myInput.value.length <= 15) {
+				document.getElementById("valid5").style.display = "inline";
+				document.getElementById("invalid5").style.display = "none";
+			} else {
+				document.getElementById("valid5").style.display = "none";
+				document.getElementById("invalid5").style.display = "inline";
+				c5 = false;
+			}
+		}
+
+	</script>
+</body>
+
+</html>

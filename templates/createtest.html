@@ -1,0 +1,265 @@
+{% include 'header.html' %}
+
+<title>Classroom | Create Test </title>
+
+
+<!-- Create Class Modal -->
+{% set classDetails = session['classDetails'] %}
+<main class="content">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3"><strong>Create Test</strong></h1>
+    <div class="row">
+      <div class="col-12 col-md-10">
+        <div class="card">
+          <div class="card-body">
+            <form action="/viewtest" method="post">
+              <input type="hidden" name="test" value="false">
+              <input type="hidden" name="post" value="">
+              <input type="hidden" name="response" value="">
+              <input type="hidden" name="result" value="">
+              <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+              <button class="btn btn-dark">View all test</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Test Title</label>
+              <input id="title" class="form-control form-control-lg" type="text" name="title" placeholder="Test Title"
+                required />
+            </div>
+            <label class="form-label">Test Score</label>
+            <div class="col-md-4">
+              <input id="score" class="form-control form-control-lg" type="number" name="score" placeholder="Test Score"
+                required />
+            </div>
+            <hr>
+            <input type="hidden" value="{{ code }}" id="code">
+            <!-- Questions -->
+            <div id="questions-container">
+              <!-- Question elements will be dynamically added here -->
+            </div>
+            <button style="display: block; margin-bottom: 2%; margin-top: 2%;" class="btn btn-warning"
+              id="add-question-btn">Add Question</button>
+            <button class="btn btn-success" id="submit-quiz-btn">Submit Quiz</button>
+            <button class="btn btn-info" id="preview-quiz-btn">Preview Quiz</button>
+            <!-- Add this button for preview -->
+            <div id="preview-container"></div> <!-- Preview will be displayed here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const addQuestionBtn = document.getElementById("add-question-btn");
+    const submitQuizBtn = document.getElementById("submit-quiz-btn");
+    const previewQuizBtn = document.getElementById("preview-quiz-btn");
+    const questionsContainer = document.getElementById("questions-container");
+    const previewContainer = document.getElementById("preview-container");
+
+    let questionCounter = 0; // Counter to track the number of questions added
+
+    // Function to create a new question element
+    function createQuestionElement() {
+      questionCounter++; // Increment counter for each new question
+      const questionElement = document.createElement("div");
+      questionElement.classList.add("question");
+      questionElement.innerHTML = `
+      <div>
+        <label><b>Question ${questionCounter}</b></label>
+        <input style="marging-top:2%; margin-bottom:2%" class="form-control form-control-lg" type="text" name="question${questionCounter}" placeholder="Enter your question" required>
+        <button style="margin-right: 5%" class="btn btn-secondary">Add Option</button>
+        <button class="btn btn-danger">Remove Question</button>
+        <div class="options-container"></div>
+        <div class="correct-answer-container"></div>
+      </div>
+    `;
+      return questionElement;
+    }
+
+    // Function to add a new question
+    function addQuestion() {
+      const newQuestion = createQuestionElement();
+      questionsContainer.appendChild(newQuestion);
+    }
+
+    // Function to remove a question
+    function removeQuestion(e) {
+      const question = e.target.closest(".question");
+      if (question) {
+        question.remove();
+        resetCounters(); // Reset counters after removing a question
+      }
+    }
+
+    // Function to reset counters
+    function resetCounters() {
+      questionCounter = 0;
+      // Update question labels and option names
+      const questionElements = questionsContainer.querySelectorAll(".question");
+      questionElements.forEach((questionElement, index) => {
+        questionCounter++;
+        questionElement.querySelector("label").innerText = `Question ${questionCounter}`;
+        const optionInputs = questionElement.querySelectorAll(".options-container input[type='radio']");
+        optionInputs.forEach((input, inputIndex) => {
+          input.name = `question${questionCounter}-option`;
+        });
+
+      });
+    }
+
+    // Function to add a new option
+    function addOption(e) {
+      const question = e.target.closest(".question");
+      if (question) {
+        const optionsContainer = question.querySelector(".options-container");
+        const optionCounter = optionsContainer.children.length + 1;
+        const newOptionInput = document.createElement("div");
+        newOptionInput.innerHTML = `
+      <input style="margin-top: 2%" type="radio" name="question${questionCounter}-option" value="${optionCounter}" required>
+      <input type="text" name="question${questionCounter}-option${optionCounter}" placeholder="Enter option" required>
+      <button style="background-color: white; color: black; border-radius: 50%; border: none" class="remove-option-btn">X</button>
+    `;
+        optionsContainer.appendChild(newOptionInput);
+      }
+    }
+
+
+    // Function to remove an option
+    function removeOption(e) {
+      const option = e.target.closest("div");
+      if (option) {
+        const question = option.closest(".question");
+        option.remove();
+        resetOptionCounter(question); // Reset option counter for the question
+      }
+    }
+
+    // Function to reset option counter for a question
+    // Function to reset option counter for a question
+    function resetOptionCounter(question) {
+      const optionsContainer = question.querySelector(".options-container");
+      const optionInputs = optionsContainer.querySelectorAll("input[type='text']");
+      optionInputs.forEach((input, index) => {
+        const optionCounter = index + 1; // Calculate the option counter
+        input.name = `question${questionCounter}-option${optionCounter}`;
+        const label = input.parentElement.querySelector("label");
+        label.textContent = `Option ${optionCounter}`; // Update label text
+      });
+    }
+
+    function getDateInFormat() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+      const year = today.getFullYear();
+
+      return `${day}-${month}-${year}`;
+    }
+
+
+    // Function to gather quiz data from the form
+    function gatherQuizData() {
+      const quizData = {
+        title: document.getElementById('title').value, // You can customize this
+        code: document.getElementById('code').value,
+        score: parseInt(document.getElementById('score').value),
+        questions: [],
+        created: getDateInFormat()
+      };
+
+      const questionElements = questionsContainer.querySelectorAll(".question");
+      questionElements.forEach(questionElement => {
+        const questionText = questionElement.querySelector("input[name^='question']").value;
+        const options = Array.from(questionElement.querySelectorAll(".options-container input[type='text']")).map(input => input.value);
+        const optionInputs = questionElement.querySelectorAll(".options-container input[type='radio']");
+        let correctAnswerIndex;
+        optionInputs.forEach((input, index) => {
+          if (input.checked) {
+            correctAnswerIndex = index;
+          }
+        });
+        quizData.questions.push({
+          question: questionText,
+          options,
+          ans: correctAnswerIndex
+        });
+      });
+      return quizData;
+    }
+
+    // Function to display quiz preview
+    function previewQuiz() {
+      const quizData = gatherQuizData();
+      previewContainer.innerHTML = ""; // Clear previous preview
+
+      const titleElement = document.createElement("h2");
+      titleElement.textContent = quizData.quiz_title;
+      previewContainer.appendChild(titleElement);
+
+      quizData.questions.forEach((question, index) => {
+        const questionElement = document.createElement("div");
+        questionElement.innerHTML = `
+        <h3>Question ${index + 1}: ${question.question}</h3>
+        <ul>
+          ${question.options.map(option => `<li>${option}</li>`).join("")}
+        </ul>
+        <p>Correct Answer: ${question.options[question.ans]}</p>
+      `;
+        previewContainer.appendChild(questionElement);
+      });
+    }
+
+    // Event listener for Add Question button
+    addQuestionBtn.addEventListener("click", addQuestion);
+
+    // Event listener for Remove button within questions container
+    questionsContainer.addEventListener("click", function (e) {
+      if (e.target.classList.contains("btn-danger")) {
+        removeQuestion(e);
+      } else if (e.target.classList.contains("btn-secondary")) {
+        addOption(e);
+      } else if (e.target.classList.contains("remove-option-btn")) {
+        removeOption(e);
+      }
+    });
+
+    // Event listener for preview quiz button
+    previewQuizBtn.addEventListener("click", previewQuiz);
+
+
+    submitQuizBtn.addEventListener("click", function () {
+      const quizData = gatherQuizData();
+      fetch('/submit_quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(quizData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          const questionsContainer = document.getElementById("questions-container");
+          questionsContainer.innerHTML = "";
+          // Clear the preview container
+          const previewContainer = document.getElementById("preview-container");
+          previewContainer.innerHTML = "";
+          window.location.href = 'http://127.0.0.1:9001/viewtest';
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+  });
+
+
+</script>

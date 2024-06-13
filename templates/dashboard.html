@@ -1,0 +1,79 @@
+{% include 'header.html' %}
+
+<title>Classroom | Dashboard </title>
+
+<style>
+	.align-left {
+		margin-right: auto;
+	}
+</style>
+
+<!-- Create Class Modal -->
+{% set user = session['userdata'] %}
+<main class="content">
+	<div class="container-fluid p-0">
+		<h1 class="h3 mb-3"><strong>Classes</strong></h1>
+		<div class="row">
+			{% if classesCount == 0 and user['role'] == 'teacher' %}
+			<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-body">
+						<p class="card-text">You haven't yet created class.</p>
+						<a href="/createclass" class="btn btn-primary">Create</a>
+					</div>
+				</div>
+			</div>
+			{% elif classesCount == 0 and user['role'] == 'student' %}
+			<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-body">
+						<p>{{ classesCount }}</p>
+						<p class="card-text">You haven't joined classes yet.</p>
+						<a href="/joinclass" class="btn btn-primary">Join</a>
+					</div>
+				</div>
+			</div>
+			{% else %}
+			{% for data in classesData %}
+			<div class="col-12 col-md-4">
+				<form action="/classdetails" method="post">
+					<button name="code" value="{{ data['code'] }}" style="background: none; border: none; text-align: left;">
+						<div class="card">
+							<img class="card-img-top" src="../static/assets/covers/{{ data['bg'] }}.jpg" alt="Unsplash">
+							<div class="card-body">
+								<p style="margin-top: -6%; font-family: Poppins; font-weight: bold; font-size: 1.1rem;"
+									class="card-text">
+									{{
+									data['className'] }}</p>
+								<p style="margin-top: -7%; margin-bottom: -3%; font-family: Poppins; font-size: 0.9rem;"
+									class="card-text">
+									{{ data['subject'] }}</p>
+							</div>
+						</div>
+					</button>
+				</form>
+			</div>
+			{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</main>
+
+
+
+{% include 'footer.html' %}
+
+<!-- 
+
+<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Create Class</h5>
+					</div>
+					<div class="card-body">
+						<p class="card-text">You haven't yet created class.</p>
+						<a href="/createClass.html" class="btn btn-primary">Create</a>
+					</div>
+				</div>
+			</div>
+ -->

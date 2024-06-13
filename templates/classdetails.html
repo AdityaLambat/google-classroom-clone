@@ -1,0 +1,214 @@
+{% include 'header.html' %}
+{% set classDetails = session['classDetails'] %}
+
+<title>Classroom | {{ classDetails['className'] }} </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+
+  #topic {
+    height: 18vh;
+    /* Set height relative to viewport height */
+  }
+
+  #copy {
+    display: none;
+  }
+</style>
+
+<!-- Class Details Modal -->
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-12">
+
+        <div class="card">
+          <div style="display: flex; align-items: baseline; position: relative;">
+            <h2 style="display: inline-block;" class="card-header">{{ classDetails['className'] }}</h2>
+            <p style="font-weight: bold; display: inline-block; position: absolute; right: 2%; margin-top: 0"
+              class="card-header">Created {{ classDetails['created'] }}</p>
+          </div>
+          <div class="card-body">
+            {% if user['role'] == 'teacher' %}
+            <div style="display: flex; align-items: baseline;">
+              <h5 id="content" style="color: black; display: inline-block;" class="card-title">{{ classDetails['code']
+                }}</h5>
+              <button onclick="copy()" style="background: none; background-color: white; border: none;">
+                <i id="cpybtn" style="color: black;" class="align-middle" data-feather="copy"></i>
+                <i id="copy" style="color: black;" class="align-middle" data-feather="check-circle"></i>
+              </button>
+            </div>
+            {% endif %}
+
+            {% set faculty = session['faculty'] %}
+            <h5 style="color: black;" class="card-title">Subject: {{ classDetails['subject'] }}</h5>
+            <p class="card-text">Faculty: {{ faculty['fname'] + " " + faculty['lname'] }}</p>
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle text-left"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Action
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                {% if user['role'] == 'teacher' %}
+                <li>
+                  <form action="/addtopic" method="post">
+                    <input type="hidden" name="addtopic" value="false">
+                    <button class="dropdown-item" name="code" value="{{ classDetails['code'] }}">Topic</button>
+                  </form>
+                </li>
+                <li>
+                  <form action="/createtest" method="post">
+                    <input type="hidden" name="createtest" value="false">
+                    <button class="dropdown-item" name="code" value="{{ classDetails['code'] }}">Test</button>
+                  </form>
+                </li>
+                {% endif %}
+
+                <!-- <li>
+                  <form action="/viewtest" method="post">
+                    <input type="hidden" name="test" value="false">
+                    <button class="dropdown-item" name="code" value="{{ classDetails['code'] }}">Create Test</button>
+                  </form>
+                </li> -->
+
+
+                <li>
+                  <form action="/announcement" method="post">
+                    <input type="hidden" name="lock" value="false">
+                    <button class="dropdown-item">Announcement</button>
+                  </form>
+                </li>
+
+                <li>
+                  <form action="/students" method="post">
+                    <input type="hidden" name="lock" value="false">
+                    <button class="dropdown-item">Students</button>
+                  </form>
+                </li>
+
+                <li>
+                  <form action="/assignments" method="post">
+                    <input type="hidden" name="lock" value="false">
+                    <button class="dropdown-item" name="code" value="{{ classDetails['code'] }}">Assignment</button>
+                  </form>
+                </li>
+
+                {% if user['role'] == 'student' %}
+                <li>
+                  <form action="/viewtest" method="post">
+                    <input type="hidden" name="test" value="">
+                    <input type="hidden" name="result" value="">
+                    <input type="hidden" name="response" value="">
+                    <input type="hidden" name="post" value="">
+                    <button class="dropdown-item" name="code" value="{{ classDetails['code'] }}">Test</button>
+                  </form>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        {% if session['ancmntcount'] != 0 %}
+        {% set announcement = session['announcement'] %}
+        <h3>Announcements</h3>
+        {% for data in announcement %}
+        <div id="topic" class="card">
+          <div
+            style="color: black; font-weight: bold; position: relative; border-bottom: 2px solid black; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;"
+            class="card-header">
+            <i style="font-weight: bold;" class="align-middle" data-feather="repeat"></i>
+            {{ data['title'] }}
+            <p style="font-weight: bold; position: absolute; right: 5%; margin-top: 0; display: inline-block;">Posted
+              {{
+              data['created'].strftime('%d-%m-%Y') }}</p>
+          </div>
+          <div class="card-body">
+            <form style="display: inline-block;" action="/viewannouncement" method="post">
+              <input type="hidden" name="type" value="view">
+              <button name="id" value="{{ data['_id'] }}" class="btn btn-primary">View Announcement</button>
+            </form>
+            <form style="display: inline-block;" action="/viewannouncement" method="post">
+              <input type="hidden" name="type" value="remove">
+              <button name="id" value="{{ data['_id'] }}" class="btn btn-danger">Remove Announcement</button>
+            </form>
+          </div>
+          <!-- <div class="card-body">
+            {% if 'attachment' in data %}
+            {% if 'link' in data['attachment'] %}
+            {% set link = data['attachment'] %}
+            <a href="{{ link['link'] }}"><b><i style="font-weight: bold;" class="align-middle"
+                  data-feather="paperclip"></i>{{ link['link'] }}</b></a><br>
+            <form style="display: inline-block;" action="/announcement" method="post">
+              <input type="hidden" name="lock" value="yes">
+              <button name="id" value="{{ data['code'] }}" class="btn btn-primary">Add class comment</button>
+            </form>
+            {% endif %}
+            {% else %}
+            <form style="display: inline-block;" action="/announcement" method="post">
+              <input type="hidden" name="lock" value="yes">
+              <button name="id" value="{{ data['code'] }}" class="btn btn-primary">Add class comment</button>
+            </form>
+            {% endif %}
+          </div> -->
+        </div>
+        {% endfor %}
+
+        {% endif %}
+        {% set topics = session['topics'] %}
+        <h3>Topics</h3>
+        {% for data in topics %}
+        <div id="topic" class="card">
+          <div
+            style="color: black; font-weight: bold; position: relative; border-bottom: 2px solid black; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;"
+            class="card-header">
+            <i style="font-weight: bold;" class="align-middle" data-feather="clipboard"></i>
+            {{ data['topic_name'] }}
+            <p style="font-weight: bold; position: absolute; right: 5%; margin-top: 0; display: inline-block;">Created
+              {{
+              data['created'] }}</p>
+          </div>
+          <div class="card-body">
+            <form style="display: inline-block;" action="/material" method="post">
+              <input type="hidden" name="lock" value="yes">
+              <button name="id" value="{{ data['topic_code'] }}" class="btn btn-primary">View Topic</button>
+            </form>
+            {% if user['role'] == 'teacher' %}
+            <form style="display: inline-block;" action="/addmaterial" method="post">
+              <input type="hidden" name="lock" value="yes">
+              <button name="id" value="{{ data['topic_code'] }}" class="btn btn-primary">Add Material</button>
+            </form>
+            <form style="display: inline-block;" action="/delete" method="post">
+              <input type="hidden" name="delete" value="topic">
+              <button name="topic_code" value="{{ data['topic_code'] }}" class="btn btn-danger">Remove Topic</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}
+
+<!-- 
+
+<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Create Class</h5>
+					</div>
+					<div class="card-body">
+						<p class="card-text">You haven't yet created class.</p>
+						<a href="/createClass.html" class="btn btn-primary">Create</a>
+					</div>
+				</div>
+			</div>
+ -->

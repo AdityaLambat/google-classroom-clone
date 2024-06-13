@@ -1,0 +1,38 @@
+{% include 'header.html' %}
+
+<title>Classroom | Create Class </title>
+
+<!-- Create Class Modal -->
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3"><strong>Create Class</strong></h1>
+    <div class="row">
+      <div class="col-12 col-md-5">
+        <div class="card">
+          <div class="card-body">
+            <form action="/createclass" method="POST">
+              <div class="mb-3">
+                <label class="form-label">Class Name</label>
+                <input class="form-control form-control-lg" type="text" name="className"
+                  placeholder="Enter your class name" minlength="5" maxlength="20" required />
+              </div>
+              <label class="form-label">Subject</label>
+              <div class="mb-3">
+                <input class="form-control form-control-lg" type="text" name="subject" minlength="5" maxlength="20" placeholder="Enter your subject"
+                  required />
+              </div>
+              <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-lg btn-primary">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}

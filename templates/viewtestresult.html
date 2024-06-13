@@ -1,0 +1,65 @@
+{% include 'header.html' %}
+{% set classDetails = session['classDetails'] %}
+{% set testdata = session['test'] %}
+<title>Classroom | {{ classDetails['className'] + " " }}Tests </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+</style>
+
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-12">
+        <h3>{{ classDetails['className'] + " " }} Tests</h3>
+
+        <div class="card">
+          <div style="display: flex; align-items: baseline; position: relative;">
+            <h2 style="display: inline-block;" class="card-header">{{ testdata['title'] }} Results</h2>
+            <p style="font-weight: bold; display: inline-block; position: absolute; right: 2%; margin-top: 0"
+              class="card-header">Created {{ testdata['created'] }}</p>
+          </div>
+          <div class="card-body">
+            {% set totalscore = session['testtotalscore'] %}
+            <p style="font-size: 18px;" class="card-text">Total Score: {{ totalscore }}</p>
+            <div style="display: flex; justify-content: space-evenly;">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <table id="example" class="display" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Sr.No</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Submission</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              {% set sr = namespace(no = 1) %}
+              {% for data in resultData %}
+              <tr>
+                <td style="background-color: white;">{{ sr.no }}</td>
+                <td style="background-color: white;">{{ data['name'] }}</td>
+                <td style="background-color: white;">{{ data['email'] }}</td>
+                <td style="background-color: white;">{{ data['submission'].strftime("%d-%m-%Y %I:%M:%p") }}</td>
+                <td style="background-color: white;">{{ data['myscore'] }}</td>
+              </tr>
+              {% set sr.no = sr.no + 1 %}
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+{% include 'footer.html' %}

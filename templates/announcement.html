@@ -1,0 +1,51 @@
+{% include 'header.html' %}
+
+<title>Classroom | Post Announcement </title>
+
+<!-- Create Class Modal -->
+{% set classDetails = session['classDetails'] %}
+<main class="content">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3"><strong>Post Announcement</strong></h1>
+    <div class="row">
+      <div class="col-12 col-md-5">
+        <div class="card">
+          <div class="card-body">
+            <div style="display: flex; justify-content: space-between;">
+              <h4>{{ classDetails['className'] }}</h4>
+            </div>
+            <form action="/announcement" method="POST" enctype="multipart/form-data">
+              <div class="mb-3">
+                <input type="hidden" name="lock" value="true">
+                <input type="hidden" name="comment" value="false">
+                <input class="form-control form-control-lg" type="text" name="text"
+                  placeholder="Announce something to your class" required />
+              </div>
+              <div class="mb-3">
+                <a onclick="showOptions()" class="btn btn-lg btn-secondary"><i class="align-middle"
+                    data-feather="paperclip"></i>Attachment</a>
+                <div id="options" style="display:none; margin-top: 5%;">
+                  <div class="container">
+                    <div class="form-group">
+                      <label><input type="radio" name="uploadOption" value="link">Insert Link</label><br>
+                      <label><input type="radio" name="uploadOption" value="file">Upload File</label><br>
+                      <label><input type="radio" name="uploadOption" value="image">Upload Image</label>
+                    </div>
+                    <div style="margin-top: 5%;" id="inputField" class="form-group"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-lg btn-success">Post</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}

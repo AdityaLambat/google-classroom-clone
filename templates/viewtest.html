@@ -1,0 +1,88 @@
+{% include 'header.html' %}
+{% set classDetails = session['classDetails'] %}
+{% set resultids = session['resultids'] %}
+
+<title>Classroom | {{ classDetails['className'] + " " }}Tests </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+</style>
+
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-12">
+        <h3>{{ classDetails['className'] + " " }} Tests</h3>
+        {% for data in tests %}
+        <div class="card">
+          <div style="display: flex; align-items: baseline; position: relative;">
+            <h2 style="display: inline-block;" class="card-header">{{ data['title'] }}</h2>
+            <p style="font-weight: bold; display: inline-block; position: absolute; right: 2%; margin-top: 0"
+              class="card-header">Created {{ data['created'] }}</p>
+          </div>
+          <div class="card-body">
+            <p class="card-text">Total Score: {{ data['score'] }}</p>
+            <div>
+              {% if user['role'] == 'teacher' %}
+              <form style="display: inline-block;" action="/viewtest" method="post">
+                <input type="hidden" name="test" value="true">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <input type="hidden" name="post" value="no">
+                <input type="hidden" name="response" value="no">
+                <input type="hidden" name="result" value="">
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-primary">View</button>
+              </form>
+              <form style="display: inline-block;" action="/viewtest" method="post">
+                <input type="hidden" name="test" value="false">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <input type="hidden" name="post" value="yes">
+                <input type="hidden" name="response" value="no">
+                <input type="hidden" name="result" value="">
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-success">Post Test</button>
+              </form>
+              <form style="display: inline-block;" action="/viewtest" method="post">
+                <input type="hidden" name="test" value="false">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <input type="hidden" name="post" value="no">
+                <input type="hidden" name="response" value="yes">
+                <input type="hidden" name="result" value="">
+                {% if data['response'] %}
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-warning">Responses: On</button>
+                {% else %}
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-danger">Responses: Off</button>
+                {% endif %}
+              </form>
+              <form style="display: inline-block;" action="/viewtest" method="post">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <input type="hidden" name="result" value="yes">
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-dark">View Results</button>
+              </form>
+              {% else %}
+              {% if data['post'] == true and data['response'] == true and data['_id'] not in resultids %}
+              <form style="display: inline-block;" action="/onlinetest" method="post">
+                <input type="hidden" name="test" value="view">
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-success">Start Test</button>
+              </form>
+              {% else %}
+              <form style="display: inline-block;" action="/viewtest" method="post">
+                <input type="hidden" name="test" value="result">
+                <button name="id" value="{{ data['_id'] }}" class="btn btn-dark">View Result</button>
+              </form>
+              {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+
+      </div>
+    </div>
+  </div>
+</main>
+
+
+{% include 'footer.html' %}

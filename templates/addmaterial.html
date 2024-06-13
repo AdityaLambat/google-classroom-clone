@@ -1,0 +1,43 @@
+{% include 'header.html' %}
+
+<title>Classroom | Add Material </title>
+
+<!-- Create Class Modal -->
+
+<main class="content">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3"><strong>Add Material</strong></h1>
+    <div class="row">
+      <div class="col-12 col-md-5">
+        <div class="card">
+          {% if msg == 'success' %}
+          <div id="myalert" class="alert alert-success col-md-12 custom-fade" role="alert">
+            Material Added Successfully
+          </div>
+          {% elif msg == 'error' %}
+          <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">Incorrect
+            Something went wrong
+          </div>
+          {% endif %}
+          <div class="card-body">
+            <form action="/addmaterial" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="lock" value="no">
+              <label class="form-label">Add File</label>
+              <div class="mb-3">
+                <input class="form-control form-control-lg" type="file" name="file" placeholder="Upload file"
+                  required id="fileInput" onchange="checkFileSize(this)"/>
+              </div>
+              <div class="d-grid gap-2 mt-3">
+                <button name="id" value="{{ data['topic_code'] }}" type="submit" class="btn btn-lg btn-primary">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+{% include 'footer.html' %}

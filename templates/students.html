@@ -1,0 +1,63 @@
+{% include 'header.html' %}
+
+<title>Classroom | Students </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+</style>
+{% set user = session['userdata'] %}
+{% set classDetails = session['classDetails'] %}
+{% set stddata = session['stddata'] %}
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        {% if user['role'] == 'teacher' %}
+        <div class="card">
+          <div class="card-body">
+            <div>
+              <h4>{{ classDetails['className'] }} | Students</h4>
+            </div>
+            {% if invite == 'success' %}
+            <div id="myalert" class="alert alert-success col-md-12 custom-fade" role="alert">
+              Invitation Sent Successfully
+            </div>
+            {% elif invite == 'fail' %}
+            <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">Incorrect
+              Something went wrong
+            </div>
+            {% endif %}
+            <form action="/invite" method="POST">
+              <div class="mb-3">
+                <label class="form-label"><b>Invite Students</b></label>
+                <input class="form-control form-control-lg" type="email" name="invite" placeholder="Type email"
+                  required />
+              </div>
+              <div class="d-grid gap-2 mt-1">
+                <button type="submit" class="btn btn-lg btn-success">Invite<i class="align-middle"
+                    data-feather="navigation"></i></button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+        <p class="btn btn-dark" style="cursor:default;">{{ session['stdCount'] }} students</p>
+        {% if session['stdCount'] == 0 %}
+        <p>There are not students in your class</p>
+        {% else %}
+        <table class="table" style="margin-top: 3%; background-color: white;">
+          {% for data in stddata %}
+          <tr>
+            <td><img src="{{ data['profile'] }}" style="border-radius: 50%; width: 4%; margin-right: 1%;"> <text
+                style="color: black; font-family: Poppins; font-weight: 600;">{{ data['name'] }}</text></td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+{% include 'footer.html' %}

@@ -1,0 +1,99 @@
+{% include 'header.html' %}
+
+<title>Classroom | {{ classDetails['className'] + " " }} Assignments </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+</style>
+
+{% set user = session['userdata'] %}
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        {% if msg == 'success' %}
+        <div id="myalert" class="alert alert-success col-md-12 custom-fade" role="alert">
+          Assignment Posted Successfully
+        </div>
+        {% elif msg == 'error' %}
+        <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">
+          Somethhing went wrong!!!
+        </div>
+        {% endif %}
+        <h3>{{ classDetails['className'] + " " }} | <text style="font-weight: bold;">Assignments</text></h3>
+        {% if user['role'] == 'teacher' %}
+        <div class="card">
+          <div class="card-body">
+            <form action="/assignments" method="POST" enctype="multipart/form-data">
+              <div class="mb-3">
+                <input class="form-control form-control-lg" type="text" name="name" placeholder="Assignment Name"
+                  required />
+              </div>
+              <div class="mb-3">
+                <input class="form-control form-control-lg" type="file" name="file" placeholder="Upload file"
+                  required />
+              </div>
+              <label class="form-label">Deadline Date</label>
+              <div class="col-12 md-6 mb-3">
+                <input class="form-control form-control-lg" type="date" name="ddline" required />
+              </div>
+              <div class="col-12 md-6 mb-3">
+                <input class="form-control form-control-lg" type="number" name="score" required placeholder="Score" />
+              </div>
+
+              <div class="d-grid gap-2 mt-3">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <button name="lock" value="true" type="submit" class="btn btn-lg btn-primary">Post Assignment</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if show == 'yes' %}
+    <div class="row" style="background-color: white; padding-top: 3%; padding-bottom: 3%;">
+      <div class="col-12 col-md-12">
+        <table class="table"  style="width:100%;">
+          <thead>
+            <tr>
+              <th>Assignment No.</th>
+              <th>Assignment Name</th>
+              <th>Posted</th>
+              <th>Deadline</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set sr = namespace(no = 1) %}
+            {% for data in data %}
+            <tr style="background-color: white;">
+              <td style="background-color: white; font-weight: bold; width: fit-content;">{{ sr.no }}</td>
+              <td style="background-color: white;">{{ data['name'] }}</td>
+              <td style="background-color: white;">{{ data['post'] }}</td>
+              <td style="background-color: white;">{{ data['ddline'].strftime('%d-%m-%Y') }}</td>
+              <td style="background-color: white;">
+                <form action="/viewassignment" method="POST">
+                  <input type="hidden" name="view" value="teacher">
+                  <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                  <button name="id" value="{{ data['_id'] }}" type="submit" class="btn btn-lg btn-primary">View</button>
+                </form>
+              </td>
+            </tr>
+            {% set sr.no = sr.no + 1 %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% elif msg == 'no' %}
+    <p>There is no assignments posted yet</p>
+    {% endif %}
+  </div>
+</main>
+
+
+{% include 'footer.html' %}

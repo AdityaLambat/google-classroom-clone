@@ -1,0 +1,126 @@
+{% include 'header.html' %}
+
+<title>Classroom | {{ classDetails['className'] + " " }} Assignment </title>
+
+<style>
+  .align-left {
+    margin-right: auto;
+  }
+</style>
+
+{% set classDetails = session['classDetails'] %}
+{% set assgnmtdata = session['assgnmtdata'] %}
+{% set assgnmtscore = session['assgnmtscore'] %}
+{% set id = data['_id'] %}
+<main class="content">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="col-12 col-md-8">
+        {% if msg == 'success' %}
+        <div id="myalert" class="alert alert-success col-md-12 custom-fade" role="alert">
+          Assignment Deleted Successfully
+        </div>
+        {% elif msg == 'error' %}
+        <div id="myalert" class="alert alert-danger col-md-12 custom-fade" role="alert">
+          Somethhing went wrong!!!
+        </div>
+        {% endif %}
+        <h3>{{ classDetails['className'] + " " }} | <text style="font-weight: bold;">Assignment</text></h3>
+        <div class="card">
+          <div>
+            <h2 class="card-header">{{ assgnmtdata['name'] }}</h2>
+            <p style="font-weight: bold;" class="card-header">Created : {{ assgnmtdata['post'] }}<br>Deadline : {{
+              assgnmtdata['ddline'].strftime('%d-%m-%Y') }}<br>Total Score : {{ assgnmtdata['score'] }}
+              {% if user[role] == 'student' %}
+              <br>Your Score : {{ assgnmtscore['score'] }}
+              {% endif %}
+            </p>
+          </div>
+          <div class="card-body">
+            <form action="/viewfile" method="POST" enctype="multipart/form-data">
+              <div class="d-grid gap-2 mt-3">
+                <input type="hidden" name="id" value="{{ assgnmtdata['_id'] }}">
+                <input type="hidden" name="code" value="{{ classDetails['code'] }}">
+                <button name="lock" value="true" type="submit" class="btn btn-lg btn-primary">View Assignment</button>
+              </div>
+            </form>
+            {% if user['role'] == 'student' and not assgnmtscore['aid'] %}
+            <form action="/submitassignment" method="POST" enctype="multipart/form-data">
+              <div class="d-grid gap-2 mt-3">
+                <input type="hidden" name="id" value="{{ assgnmtdata['_id'] }}">
+                <input type="file" class="form-control form-control-lg" name="assignment">
+                <button type="submit" class="btn btn-lg btn-primary">Submit Assignment</button>
+              </div>
+            </form>
+            {% else %}
+            {% if user['role'] == 'student' %}
+            <div class="d-grid gap-2 mt-3">
+              <button type="submit" disabled class="btn btn-lg btn-success">Assignment Submitted</button>
+            </div>
+            {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% set submission = session['submission'] %}
+    {% if user['role'] == 'teacher' %}
+    <div class="row" style="background-color: white; padding-top: 3%; padding-bottom: 3%;">
+      <div class="col-12 col-md-12">
+        <caption>Students Submission</caption>
+        <table id="example" class="display" style="width:100%;">
+          <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Submission</th>
+              <th>View</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          {% set sr = namespace(no = 1) %}
+          {% for data in submission%}
+          <tr>
+            <td style="background-color: white;">{{ sr.no }}</td>
+            <td style="background-color: white;">{{ data['name'] }}</td>
+            <td style="background-color: white;">{{ data['email'] }}</td>
+            <td style="background-color: white;">{{ data['submission'].strftime("%d-%m-%Y %I:%M:%p") }}</td>
+            <td style="background-color: white;">
+              <form action="/viewfile" method="POST">
+                <input type="hidden" name="view" value="student">
+                <input type="hidden" name="id" value="{{ data['_id'] }}">
+                <button type="submit" class="btn btn-lg btn-primary">View</button>
+              </form>
+            </td>
+            <td style="background-color: white;">
+              {% if data['score'] == 'not released' %}
+              {{ data['score'] }}
+              <form action="/submitassignment" method="POST">
+                <input type="hidden" name="id" value="{{ data['_id'] }}">
+                <input type="hidden" name="mainid" value="{{ data['aid'] }}">
+                <input type="number" name="score" min="0" max="{{ assgnmtdata['score'] }}">
+                <button type="submit" class="btn btn-lg btn-primary">Submit</button>
+              </form>
+              {% else %}
+              {{ data['score'] }}
+              <form action="/submitassignment" method="POST">
+                <input type="hidden" name="id" value="{{ data['_id'] }}">
+                <input type="hidden" name="mainid" value="{{ data['aid'] }}">
+                <input type="number" name="score" min="0" max="{{ assgnmtdata['score'] }}">
+                <button type="submit" class="btn btn-lg btn-primary">Update</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% set sr.no = sr.no + 1 %}
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+
+{% include 'footer.html' %}

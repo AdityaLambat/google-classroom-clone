@@ -1,0 +1,80 @@
+{% include 'header.html' %}
+
+<title>Classroom | Material </title>
+
+<style>
+	.align-left {
+		margin-right: auto;
+	}
+</style>
+
+<!-- Create Class Modal -->
+{% set user = session['userdata'] %}
+
+<main class="content">
+	<div class="container-fluid p-0">
+		<h1 class="h3 mb-3"><strong>Material</strong></h1>
+		<div class="row">
+			{% if not query['material'] and user['role'] == teacher %}
+			<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-body">
+						<p class="card-text">You haven't yet added material.</p>
+						<form action="/addmaterial" method="post">
+							<input type="hidden" name="lock" value="yes">
+							<button class="btn btn-primary" type="submit" name="id" value="{{ query['topic_code'] }}">Add
+								Material</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			{% elif not query['material']%}
+			<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-body">
+						<p class="card-text">Material not added yet</p>
+					</div>
+				</div>
+			</div>
+			{% else %}
+			{% for data in materials %}
+			<div class="col-12 col-md-4">
+				<form action="/viewnote" method="post">
+					<button name="file" value="{{ data['name'] }}" style="background: none; border: none; text-align: left;">
+						<div class="card">
+							<img class="card-img-top" src="../static/assets/covers/pdf.jpg" alt="Unsplash">
+							<div id="material" class="card-body" style="align-items: center; display: flex;">
+								<i style="margin-right: 2%;" class="bi bi-file-earmark-fill"></i>
+								<p style="font-family: Poppins; font-weight: bold; font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0; flex: 1;"
+									class="card-text">
+									{{ data['name'] }}
+								</p>
+							</div>
+						</div>
+					</button>
+				</form>
+			</div>
+			{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</main>
+
+
+
+{% include 'footer.html' %}
+
+<!-- 
+
+<div class="col-12 col-md-5">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Create Class</h5>
+					</div>
+					<div class="card-body">
+						<p class="card-text">You haven't yet created class.</p>
+						<a href="/createClass.html" class="btn btn-primary">Create</a>
+					</div>
+				</div>
+			</div>
+ -->

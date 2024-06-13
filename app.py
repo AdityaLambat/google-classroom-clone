@@ -42,6 +42,21 @@ Session(app)
 
 ########## Google OAuth Configuration ##########
 
+oauth = OAuth(app)
+google = oauth.remote_app(
+    'google',
+    consumer_key='551512512972-sva6sd52q4u89lj5ippl60ts9v00lcok.apps.googleusercontent.com',
+    consumer_secret='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',
+    request_token_params={
+        'scope': 'email profile',
+    },
+    base_url='https://www.googleapis.com/oauth2/v1/',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+)
+
 
 # Add the custom filter to the Jinja2 environment
 app.jinja_env.filters['chr'] = chr_filter

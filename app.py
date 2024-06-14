@@ -62,7 +62,7 @@ google = oauth.remote_app(
 app.jinja_env.filters['chr'] = chr_filter
 
 ########## Database Connection ##########
-client = pymongo.MongoClient('mongodb://localhost:27017/classroom')
+client = pymongo.MongoClient('mongodb+srv://MongoDBCluster:MongoDBCluster@mongodbcluster1301.mzjex1w.mongodb.net/classroom')
 database = client['classroom']
 classes = database['classes']  # classes
 users = database['users']  # users
